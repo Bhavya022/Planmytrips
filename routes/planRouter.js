@@ -4,9 +4,12 @@
 const express = require('express') 
 const planRouter = express.Router() 
 
-const {PlanModel}=require("../models/plan.model") 
+const {PlanModel}=require("../models/plan.model")  
 
-//Get plan 
+//Get plan  
+planRouter.get("/",async(req,res)=>{
+    res.status(200).send("welcome to PlanMyTrip")
+})
 planRouter.get("/getall",async(req,res)=>{
      
     try{
@@ -69,5 +72,29 @@ planRouter.get('/sort/:budgetperperson', async (req, res) => {
     }
   });
   
+// Example of backend code
 
+planRouter.get('/filter-sort', async (req, res) => {
+    const { destination, sort } = req.query;
+  
+    try {
+      let query = PlanModel.find();
+  
+      if (destination) {
+        query = query.where('destination', destination);
+      }
+  
+      if (sort === 'asc') {
+        query = query.sort({ budgetPerPerson: 1 });
+      } else if (sort === 'desc') {
+        query = query.sort({ budgetPerPerson: -1 });
+      }
+  
+      const filteredAndSortedData = await query.exec();
+      res.status(200).json({ msg: 'Data Retrieved', data: filteredAndSortedData });
+    } catch (error) {
+      res.status(500).json({ error: 'Error fetching filtered and sorted data' });
+    }
+  });
+  
   module.exports =planRouter
